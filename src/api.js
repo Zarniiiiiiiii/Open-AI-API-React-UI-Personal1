@@ -1,6 +1,6 @@
 // API configuration
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://openai.ugs.ro/api'  // Production backend URL
+  ? 'https://open-ai-api-react-ui-personal.vercel.app/api'  // Production backend URL
   : 'http://localhost:3001/api';  // Development backend URL
 
 export const callOpenAI = async (modelId, prompt) => {
