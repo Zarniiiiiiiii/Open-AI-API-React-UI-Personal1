@@ -43,7 +43,7 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8 text-center">AI Model Comparison</h1>
+        <h1 className="text-3xl font-bold mb-8 text-center">Ultra-AI</h1>
         
         <form onSubmit={handleSubmit} className="mb-8">
           <div className="mb-6">
@@ -52,12 +52,12 @@ function App() {
             </label>
             <div className="flex flex-wrap gap-4">
               {models.map(model => (
-                <label key={model.id} className="flex items-center space-x-2">
+                <label key={model.id} className="flex items-center space-x-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={selectedModels.includes(model.id)}
                     onChange={() => handleModelToggle(model.id)}
-                    className="form-checkbox h-5 w-5 text-blue-600"
+                    className="form-checkbox h-5 w-5 text-blue-600 cursor-pointer"
                   />
                   <span>{model.name}</span>
                 </label>
@@ -72,7 +72,7 @@ function App() {
             <textarea
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              className="w-full h-32 p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full h-32 p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-text"
               placeholder="Type your prompt here..."
             />
           </div>
@@ -80,7 +80,7 @@ function App() {
           <button
             type="submit"
             disabled={loading || !prompt.trim() || selectedModels.length === 0}
-            className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             {loading ? 'Processing...' : 'Submit'}
           </button>
