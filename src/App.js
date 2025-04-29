@@ -1,13 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { models } from './models';
 import { callOpenAI } from './api';
 import './App.css';
 
 function App() {
-  const [selectedModels, setSelectedModels] = useState([]);
+  // Load selected models from localStorage on initial render
+  const [selectedModels, setSelectedModels] = useState(() => {
+    const saved = localStorage.getItem('selectedModels');
+    return saved ? JSON.parse(saved) : [];
+  });
+
   const [prompt, setPrompt] = useState('');
   const [responses, setResponses] = useState({});
   const [loading, setLoading] = useState(false);
+
+  // Save selected models to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('selectedModels', JSON.stringify(selectedModels));
+  }, [selectedModels]);
 
   const handleModelToggle = (modelId) => {
     setSelectedModels(prev => 
