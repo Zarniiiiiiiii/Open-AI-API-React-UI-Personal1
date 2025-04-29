@@ -1,35 +1,26 @@
 {
-  // Configuration version for Vercel
   "version": 2,
-  
-  // Define the build configurations
   "builds": [
     {
-      // Build the Node.js server
       "src": "server.js",
       "use": "@vercel/node"
     },
     {
-      // Build the React frontend
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "build"  // Output directory for the React build
+        "distDir": "build"
       }
     }
   ],
-  
-  // Define routing rules
   "routes": [
     {
-      // Route all API requests to the server
       "src": "/api/(.*)",
       "dest": "server.js"
     },
     {
-      // Route all other requests to the static files
       "src": "/(.*)",
       "dest": "/$1"
     }
   ]
-} 
+}
