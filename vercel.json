@@ -2,6 +2,10 @@
   "version": 2,
   "builds": [
     {
+      "src": "server-claude/server.js",
+      "use": "@vercel/node"
+    },
+    {
       "src": "server.js",
       "use": "@vercel/node"
     },
@@ -15,12 +19,19 @@
   ],
   "routes": [
     {
+      "src": "/api/claude/(.*)",
+      "dest": "server-claude/server.js"
+    },
+    {
       "src": "/api/(.*)",
       "dest": "server.js"
     },
     {
       "src": "/(.*)",
-      "dest": "/$1"
+      "dest": "build/$1"
     }
-  ]
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
 }

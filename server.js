@@ -13,21 +13,30 @@ require('dotenv').config();
 
 // Debug environment variables
 console.log('Environment:', process.env.NODE_ENV);
-console.log('API Key present:', !!process.env.REACT_APP_OPENAI_API_KEY);
-console.log('API Key length:', process.env.REACT_APP_OPENAI_API_KEY ? process.env.REACT_APP_OPENAI_API_KEY.length : 0);
+console.log('API Key present:', !!process.env.OPENAI_API_KEY);
+console.log('API Key length:', process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.length : 0);
 
 // Initialize Express app
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware configuration
-app.use(cors());  // Enable CORS for all routes
+app.use(cors({
+    origin: process.env.NODE_ENV === 'production' 
+        ? ['https://openai.ugs.ro', 'https://open-ai-api-react-ui-personal1.vercel.app']
+        : ['http://localhost:3000']
+}));
 app.use(morgan('dev'));  // Log HTTP requests
 app.use(express.json());  // Parse JSON request bodies
 
 // Serve static files from the React app in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, 'build')));
+  
+  // Handle React routing, return all requests to React app
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+  });
 }
 
 /**
@@ -39,7 +48,8 @@ app.get('/api/health', (req, res) => {
     status: 'ok', 
     timestamp: new Date().toISOString(),
     env: process.env.NODE_ENV,
-    apiKeyPresent: !!process.env.REACT_APP_OPENAI_API_KEY
+    apiKeyPresent: !!process.env.OPENAI_API_KEY,
+    domain: req.headers.host
   });
 });
 
@@ -61,7 +71,7 @@ app.post('/api/chat/completions', async (req, res) => {
     });
 
     // Check for OpenAI API key
-    if (!process.env.REACT_APP_OPENAI_API_KEY) {
+    if (!process.env.OPENAI_API_KEY) {
       console.error('OpenAI API key is missing');
       return res.status(500).json({ error: 'Server configuration error' });
     }
@@ -71,7 +81,7 @@ app.post('/api/chat/completions', async (req, res) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
       },
       body: JSON.stringify(req.body)
     });
@@ -107,16 +117,6 @@ app.use((err, req, res, next) => {
     message: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
   });
 });
-
-/**
- * Handle React routing in production
- * Serves the React app for all non-API routes
- */
-if (process.env.NODE_ENV === 'production') {
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'build', 'index.html'));
-  });
-}
 
 // Export the Express API for Vercel
 module.exports = app;

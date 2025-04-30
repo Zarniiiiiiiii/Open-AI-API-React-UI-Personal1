@@ -8,7 +8,11 @@ const app = express();
 const PORT = process.env.CLAUDE_SERVER_PORT || 3002;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: process.env.NODE_ENV === 'production' 
+        ? ['https://openai.ugs.ro', 'https://open-ai-api-react-ui-personal1.vercel.app']
+        : ['http://localhost:3000']
+}));
 app.use(morgan('dev'));
 app.use(express.json());
 
