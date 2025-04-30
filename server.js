@@ -13,8 +13,8 @@ require('dotenv').config();
 
 // Debug environment variables
 console.log('Environment:', process.env.NODE_ENV);
-console.log('API Key present:', !!process.env.OPENAI_API_KEY);
-console.log('API Key length:', process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.length : 0);
+console.log('API Key present:', !!process.env.REACT_APP_OPENAI_API_KEY);
+console.log('API Key length:', process.env.REACT_APP_OPENAI_API_KEY ? process.env.REACT_APP_OPENAI_API_KEY.length : 0);
 
 // Initialize Express app
 const app = express();
@@ -39,7 +39,7 @@ app.get('/api/health', (req, res) => {
     status: 'ok', 
     timestamp: new Date().toISOString(),
     env: process.env.NODE_ENV,
-    apiKeyPresent: !!process.env.OPENAI_API_KEY
+    apiKeyPresent: !!process.env.REACT_APP_OPENAI_API_KEY
   });
 });
 
@@ -61,7 +61,7 @@ app.post('/api/chat/completions', async (req, res) => {
     });
 
     // Check for OpenAI API key
-    if (!process.env.OPENAI_API_KEY) {
+    if (!process.env.REACT_APP_OPENAI_API_KEY) {
       console.error('OpenAI API key is missing');
       return res.status(500).json({ error: 'Server configuration error' });
     }
@@ -71,7 +71,7 @@ app.post('/api/chat/completions', async (req, res) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+        'Authorization': `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`
       },
       body: JSON.stringify(req.body)
     });

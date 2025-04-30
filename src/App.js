@@ -107,6 +107,8 @@ function App() {
             const model = models.find(m => m.id === modelId);
             const response = responses[modelId];
             
+            if (!model) return null;
+            
             return (
               <div key={modelId} className="bg-white p-6 rounded-lg shadow">
                 <h3 className="text-xl font-semibold mb-4">{model.name}</h3>
