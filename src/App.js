@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { models } from './models';
-import { callOpenAI } from './api';
+import { models } from './models/openai';
+import { claudeModels } from './models/claude';
+import { callOpenAI } from './api/openai';
+import { callClaude } from './api/claude';
 import './App.css';
 
 function App() {
@@ -36,8 +38,19 @@ function App() {
 
     const results = {};
     for (const modelId of selectedModels) {
-      const result = await callOpenAI(modelId, prompt);
-      results[modelId] = result;
+      try {
+        // Determine if it's an OpenAI or Claude model
+        const isOpenAIModel = models.some(m => m.id === modelId);
+        const result = isOpenAIModel 
+          ? await callOpenAI(modelId, prompt)
+          : await callClaude(modelId, prompt);
+        results[modelId] = result;
+      } catch (error) {
+        results[modelId] = {
+          success: false,
+          error: error.message
+        };
+      }
     }
 
     setResponses(results);
@@ -45,7 +58,8 @@ function App() {
   };
 
   const calculateCost = (modelId, usage) => {
-    const model = models.find(m => m.id === modelId);
+    const allModels = [...models, ...claudeModels];
+    const model = allModels.find(m => m.id === modelId);
     if (!model || !usage) return 0;
     return (usage.total_tokens / 1000) * model.pricePer1KTokens;
   };
@@ -61,7 +75,7 @@ function App() {
               Select Models:
             </label>
             <div className="flex flex-wrap gap-4">
-              {models.map(model => (
+              {[...models, ...claudeModels].map(model => (
                 <label key={model.id} className="flex items-center space-x-2 cursor-pointer">
                   <input
                     type="checkbox"
@@ -104,7 +118,8 @@ function App() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {selectedModels.map(modelId => {
-            const model = models.find(m => m.id === modelId);
+            const allModels = [...models, ...claudeModels];
+            const model = allModels.find(m => m.id === modelId);
             const response = responses[modelId];
             
             if (!model) return null;
